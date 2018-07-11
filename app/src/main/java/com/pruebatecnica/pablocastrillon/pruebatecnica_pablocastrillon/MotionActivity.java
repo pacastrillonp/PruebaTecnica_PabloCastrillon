@@ -6,6 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.controller.utils.FragmentManagerActivity;
@@ -36,6 +38,15 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     private long initTime;
     private long finalTime;
 
+
+    // stop watch
+    private Handler handler;
+    private long startTime, timeInMilliseconds, timeSwap, upDateTime;
+    private Runnable runnable;
+    int secs;
+    int min ;
+    int milliSeconds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +58,23 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
             mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
             varMuestreo = 0;
+            handler = new Handler();
+
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+                    upDateTime = timeSwap + timeInMilliseconds;
+                     secs = (int) (upDateTime / 1000);
+                     min = secs / 60;
+                     milliSeconds = (int)(upDateTime%1000);
+                    System.out.println(""+min+":"+String.format("%2d",secs)+":"+
+                    String.format("%3d", milliSeconds));
+                    handler.postDelayed(this, 0);
+
+
+                }
+            };
 
         }
 
@@ -78,12 +106,16 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
                 if (shake) {
                     if (stopWatchStart) {
-                        if (motionDuration > 2) {
+//                        if (motionDuration > 2) {
+                        if (secs > 2){
                             //TODO: send notification -> initTime
                         }
 
                     } else {
                         //TODO: run stopWatch
+
+                        runStopWatch();
+
                         initTime = event.timestamp;
                         stopWatchStart = true;
 
@@ -91,7 +123,7 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
                     }
                 } else {
                     if (stopWatchStart) {
-                        //TODO: stopWatch
+                        pausaStopWatch();
                         //TODO: duracion del movimiento -> motionDuration
                         finalTime = event.timestamp;
                         stopWatchStart = false;
@@ -105,6 +137,18 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
         }
 
+
+    }
+
+    private void runStopWatch() {
+        startTime = SystemClock.uptimeMillis();
+        handler.postDelayed(runnable, 0);
+
+    }
+
+    private void pausaStopWatch() {
+        timeSwap+= timeInMilliseconds;
+        handler.removeCallbacks(runnable, 0);
 
     }
 
