@@ -27,8 +27,14 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     private float promMuestreo;
     private float errorBase;
 
+    private boolean shake;
+    private boolean stopWatchStart = false;
 
-//    private float shake;
+    private float motionDuration = 0f;
+
+
+    private long initTime;
+    private long finalTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +47,6 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
             mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
             varMuestreo = 0;
-
-//            acelIni = SensorManager.GRAVITY_EARTH;
-//            acelLast = SensorManager.GRAVITY_EARTH;
-//            shake = 0.000f;
-
 
         }
 
@@ -69,11 +70,34 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
                 System.out.println(errorBase);
 
                 if (errorBase > 10) {
-                    long timeIni = event.timestamp;
-                    Date date = new Date(timeIni);
-                    System.out.println(date);
-                    long timeFinal = event.timestamp;
+                    shake = true;
+                } else {
+                    shake = false;
                 }
+
+
+                if (shake) {
+                    if (stopWatchStart) {
+                        if (motionDuration > 2) {
+                            //TODO: send notification -> initTime
+                        }
+
+                    } else {
+                        //TODO: run stopWatch
+                        initTime = event.timestamp;
+                        stopWatchStart = true;
+
+
+                    }
+                } else {
+                    if (stopWatchStart) {
+                        //TODO: stopWatch
+                        //TODO: duracion del movimiento -> motionDuration
+                        finalTime = event.timestamp;
+                        stopWatchStart = false;
+                    }
+                }
+
                 acelIni = 0;
                 varMuestreo = 0;
             }
