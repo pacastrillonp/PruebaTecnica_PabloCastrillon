@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">PruebaTecnica_PabloCastrillon</string>
+
+    <string name="show_notifications">Show Notifications</string>
+    <string name="show_barplot">Show BarPlot</string>
+
+    <string name="delete">Delete</string>
 </resources>
