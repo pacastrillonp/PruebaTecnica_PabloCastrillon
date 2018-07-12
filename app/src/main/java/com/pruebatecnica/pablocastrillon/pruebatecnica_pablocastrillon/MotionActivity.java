@@ -6,8 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.controller.utils.FragmentManagerActivity;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.WebService;
@@ -48,23 +46,13 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     private DateTime dateTimeIni;
     private DateTime dateTimeFin;
-
-    private float motionDuration = 0f;
+    private DateTime dateTimeTem;
 
 
     private String initTime;
-    private String finalTime;
+
 
     private SimpleDateFormat simpleDateFormat;
-
-
-    // stop watch
-    private Handler handler;
-    private long startTime, timeInMilliseconds, timeSwap, upDateTime;
-    private Runnable runnable;
-    int secs;
-    int min;
-    int milliSeconds;
 
 
     //fragments
@@ -112,28 +100,6 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
             addFragment(selectionFragment, selectionFragmentTag);
             activeFragment = selectionFragmentTag;
 
-
-            // StopWatch
-            handler = new Handler();
-
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
-
-
-                    upDateTime = timeSwap + timeInMilliseconds;
-                    secs = (int) (upDateTime / 1000);
-                    min = secs / 60;
-                    milliSeconds = (int) (upDateTime % 1000);
-                    System.out.println("" + min + ":" + String.format("%2d", secs) + ":" +
-                            String.format("%3d", milliSeconds));
-                    handler.postDelayed(this, 0);
-
-
-                }
-            };
-
         }
 
     }
@@ -141,6 +107,7 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
 
             if (varMuestreo < 10) {
                 acelIni = acelIni + event.values[2];
@@ -154,6 +121,8 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
                 System.out.println(acelFin);
                 System.out.println(errorBase);
 
+                dateTimeTem = new DateTime();
+
 
                 // error base de 5%, superado este umbral se considera como movimiento
                 if (errorBase > 5) {
@@ -164,9 +133,12 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
 
                 if (shake) {
-                    if (stopWatchStart) {
-//                        if (motionDuration > 2) {
-                        if (secs > 2) {
+                    if (!stopWatchStart) {
+                        dateTimeIni = new DateTime();
+                        initTime = simpleDateFormat.format(new Date());
+                        stopWatchStart = true;
+                    } else {
+                        if (Seconds.secondsBetween(dateTimeIni, dateTimeTem).getSeconds() >= 2) {
 
                             if (!notificationPostSend) {
                                 notificationBody.setNotificationId(0);
@@ -175,40 +147,26 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
                                 webService.postNotification(notificationBody);
                                 notificationPostSend = true;
                             }
-
-                            //TODO: send notification -> initTime
                         }
-
-                    } else {
-
-                        dateTimeIni = new DateTime();
-                        initTime = simpleDateFormat.format(new Date());
-                        runStopWatch();
-                        stopWatchStart = true;
-
-
                     }
                 } else {
                     if (stopWatchStart) {
-                        pausaStopWatch();
-                        //TODO: duracion del movimiento -> motionDuration
-
                         stopWatchStart = false;
                         notificationPostSend = false;
-
-
                         dateTimeFin = new DateTime();
-                        finalTime = simpleDateFormat.format(new Date());
 
                         int seconds = Seconds.secondsBetween(dateTimeIni, dateTimeFin).getSeconds();
-                        notificationBody.setDuration(seconds);
-                        webService.putNotification(notificationBody, String.valueOf(notificationBody.getNotificationId()));
-
-
+                        if (seconds >= 2) {
+                            while (true) {
+                                if (notificationBody.getNotificationId() != 0) {
+                                    notificationBody.setDuration(seconds);
+                                    webService.putNotification(notificationBody, String.valueOf(notificationBody.getNotificationId()));
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
-
-
                 acelIni = 0;
                 varMuestreo = 0;
             }
@@ -219,24 +177,6 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     }
 
-    private void runStopWatch() {
-        startTime = SystemClock.uptimeMillis();
-        handler.postDelayed(runnable, 0);
-
-    }
-
-    private void pausaStopWatch() {
-        timeSwap += 0;
-        timeInMilliseconds = 0;
-        upDateTime = 0;
-        secs = 0;
-        min = 0;
-        milliSeconds = 0;
-
-        handler.removeCallbacks(runnable);
-
-
-    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
