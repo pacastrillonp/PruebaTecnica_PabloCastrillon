@@ -189,6 +189,9 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     @Override
     public void onGetNotifications(NotificationBody[] notificationBodies) {
+
+        this.notificationBodies = notificationBodies;
+
         bundle.putInt("index", notificationBodies.length);
         bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
         removeFragment(activeFragment);
@@ -224,7 +227,11 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     @Override
     public void OnShowBarPlotClick() {
+
+        bundle.putInt("index", notificationBodies.length);
+        bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
         removeFragment(activeFragment);
+        barPlotFragment.setArguments(bundle);
         addFragment(barPlotFragment, barPlotFragmentTag);
         activeFragment = barPlotFragmentTag;
 
