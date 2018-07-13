@@ -1,16 +1,17 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
-import android.annotation.SuppressLint;
+import android.app.Service;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
-import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.controller.utils.FragmentManagerActivity;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.WebService;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.WebServiceListener;
-import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.utils.NotificationListAdapter;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.utils.SerializationTool;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.NotificationBody;
 
@@ -20,7 +21,7 @@ import org.joda.time.Seconds;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MotionActivity extends FragmentManagerActivity implements SensorEventListener, WebServiceListener, SelectionFragment.ButtonActionClickListener, NotificationListAdapter.ButtonActionClickListener {
+public class MotionDetectorService extends Service implements SensorEventListener, WebServiceListener  {
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -48,34 +49,28 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     private DateTime dateTimeFin;
     private DateTime dateTimeTem;
 
-
+    private NotificationFragment notificationFragment;
     private String initTime;
 
 
     private SimpleDateFormat simpleDateFormat;
 
 
-    //fragments
-    private SelectionFragment selectionFragment;
-    private final String selectionFragmentTag = "selectionFragmentTag";
-
-    private BarPlotFragment barPlotFragment;
-    private final String barPlotFragmentTag = "barPlotFragmentTag";
-
-    private NotificationFragment notificationFragment;
-    private final String notificationFragmentTag = "notificationFragmentTag";
-
-    private String activeFragment;
-
-    private Bundle bundle;
 
 
-    @SuppressLint("SimpleDateFormat")
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            setContentView(R.layout.activity_motion);
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+
+        notificationFragment = new NotificationFragment();
+
 
             // Inicializacion de sensor
             mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
@@ -91,18 +86,18 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
             simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-            // Inicializacion de fragmentos
-            selectionFragment = new SelectionFragment();
-            barPlotFragment = new BarPlotFragment();
-            notificationFragment = new NotificationFragment();
-            bundle = new Bundle();
 
-            addFragment(selectionFragment, selectionFragmentTag);
-            activeFragment = selectionFragmentTag;
 
-        }
 
+        return START_STICKY;
     }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+    }
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -144,7 +139,7 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
                                 notificationBody.setNotificationId(0);
                                 notificationBody.setDate(initTime);
                                 notificationBody.setDuration(0);
-                                webService.postNotification(notificationBody);
+                                webService.postNotificationService(notificationBody);
                                 notificationPostSend = true;
                             }
                         }
@@ -160,7 +155,7 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
                             while (true) {
                                 if (notificationBody.getNotificationId() != 0) {
                                     notificationBody.setDuration(seconds);
-                                    webService.putNotification(notificationBody, String.valueOf(notificationBody.getNotificationId()));
+                                    webService.putNotificationService(notificationBody, String.valueOf(notificationBody.getNotificationId()));
                                     break;
                                 }
                             }
@@ -178,36 +173,28 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     }
 
 
+
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 
 
-    //regionWebServiceListener
-
 
     @Override
     public void onGetNotifications(NotificationBody[] notificationBodies) {
 
-        this.notificationBodies = notificationBodies;
-
-        bundle.putInt("index", notificationBodies.length);
-        bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
-        removeFragment(activeFragment);
-        notificationFragment.setArguments(bundle);
-        addFragment(notificationFragment, notificationFragmentTag);
-        activeFragment = notificationFragmentTag;
     }
 
     @Override
     public void onGetNotification(NotificationBody notificationBody) {
-        this.notificationBody = notificationBody;
+
     }
 
     @Override
-    public void onGetNotificationService(NotificationBody notificationBodies) {
-
+    public void onGetNotificationService(NotificationBody notificationBody) {
+        this.notificationBody = notificationBody;
     }
 
     @Override
@@ -217,7 +204,9 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     @Override
     public void onPutNotification(NotificationBody notificationBodies) {
-        notificationFragment.dataChanged(notificationBodies);
+
+
+
     }
 
     @Override
@@ -226,54 +215,4 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     }
 
 
-    //endregion
-
-
-    //regionSelectionFragment
-    @Override
-    public void OnShowNotificationsClick() {
-        webService.getNotifications();
-    }
-
-    @Override
-    public void OnShowBarPlotClick() {
-
-        bundle.putInt("index", notificationBodies.length);
-        bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
-        removeFragment(activeFragment);
-        barPlotFragment.setArguments(bundle);
-        addFragment(barPlotFragment, barPlotFragmentTag);
-        activeFragment = barPlotFragmentTag;
-
-    }
-
-//    endregion
-
-
-    @Override
-    public void onBackPressed() {
-
-        switch (activeFragment) {
-            case selectionFragmentTag:
-                super.onBackPressed();
-                break;
-            case barPlotFragmentTag:
-                removeFragment(barPlotFragmentTag);
-                addFragment(selectionFragment, selectionFragmentTag);
-                activeFragment = selectionFragmentTag;
-                break;
-            case notificationFragmentTag:
-                removeFragment(notificationFragmentTag);
-                addFragment(selectionFragment, selectionFragmentTag);
-                activeFragment = selectionFragmentTag;
-                break;
-
-        }
-
-    }
-
-    @Override
-    public void OnDeleteChannelClick(int notificationId) {
-        webService.delNotification(String.valueOf(notificationId));
-    }
 }

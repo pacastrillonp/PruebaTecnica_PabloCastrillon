@@ -268,6 +268,119 @@ public class WebService {
     }
 
 
+
+    public void postNotificationService(NotificationBody notificationBody) {
+        try {
+
+            Gson gson = new GsonBuilder().create();
+
+            JSONObject data = new JSONObject(gson.toJson(notificationBody));
+            Uri.Builder uriBuilder = Uri.parse(getApiRestUrl())
+                    .buildUpon();
+
+            Request jsObjRequest = new JsonObjectRequest
+                    (Request.Method.POST, uriBuilder.toString(), data, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+
+                                Gson gson = new GsonBuilder().create();
+                                NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
+                                webServiceListener.onGetNotificationService(resp);
+
+                            } catch (Exception ex) {
+                                Log.e("onResponse", ex.getMessage());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    }) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    return handleEmptyObjectResponse(response);
+                }
+
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new ArrayMap<>();
+                    headers.put("Authorization", "Basic 1036612823");
+                    return headers;
+                }
+            };
+
+            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    VOLLEY_TIME_OUT,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            jsObjRequest.setShouldCache(false);
+
+            mainQueue.add(jsObjRequest);
+
+        } catch (Exception ex) {
+            Log.e(this.toString(), ex.getMessage());
+        }
+    }
+
+
+    public void putNotificationService(NotificationBody notificationBody, String NotificationId) {
+        try {
+
+            Gson gson = new GsonBuilder().create();
+
+            JSONObject data = new JSONObject(gson.toJson(notificationBody));
+            Uri.Builder uriBuilder = Uri.parse(getApiRestUrl())
+                    .buildUpon()
+                    .appendPath(NotificationId);
+
+            Request jsObjRequest = new JsonObjectRequest
+                    (Request.Method.PUT, uriBuilder.toString(), data, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+
+                                Gson gson = new GsonBuilder().create();
+                                NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
+                                webServiceListener.onPutNotificationService();
+                            } catch (Exception ex) {
+                                Log.e("onResponse", ex.getMessage());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                        }
+                    }) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    return handleEmptyObjectResponse(response);
+                }
+
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new ArrayMap<>();
+                    headers.put("Authorization", "Basic 1036612823");
+                    return headers;
+                }
+            };
+
+            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    VOLLEY_TIME_OUT,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            jsObjRequest.setShouldCache(false);
+
+            mainQueue.add(jsObjRequest);
+
+        } catch (Exception ex) {
+            Log.e(this.toString(), ex.getMessage());
+        }
+    }
+
     public void delNotification(String NotificationId) {
 
         try {
