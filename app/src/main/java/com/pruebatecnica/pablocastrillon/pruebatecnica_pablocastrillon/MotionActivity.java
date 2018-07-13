@@ -1,11 +1,16 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.controller.utils.FragmentManagerActivity;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.WebService;
@@ -20,7 +25,7 @@ import org.joda.time.Seconds;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MotionActivity extends FragmentManagerActivity implements SensorEventListener, WebServiceListener, SelectionFragment.ButtonActionClickListener, NotificationListAdapter.ButtonActionClickListener {
+public class MotionActivity extends FragmentManagerActivity implements SensorEventListener, WebServiceListener, SelectionFragment.ButtonActionClickListener, NotificationListAdapter.ButtonActionClickListener{
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -69,6 +74,8 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     private Bundle bundle;
 
+    public static final String ARKBOX_LAUNCHER_FILTER = "LauncherDate";
+
 
     @SuppressLint("SimpleDateFormat")
     @Override
@@ -76,6 +83,13 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             setContentView(R.layout.activity_motion);
+
+            try {
+                LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(ARKBOX_LAUNCHER_FILTER));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             // Inicializacion de sensor
             mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
@@ -178,6 +192,7 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
     }
 
 
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
@@ -272,8 +287,47 @@ public class MotionActivity extends FragmentManagerActivity implements SensorEve
 
     }
 
+
+    @Override
+    protected void onResume() {
+        try {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(ARKBOX_LAUNCHER_FILTER));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        startService(new Intent(this,MotionDetectorService.class));
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        stopService(new Intent(this,MotionDetectorService.class));
+        super.onStart();
+    }
+
     @Override
     public void OnDeleteChannelClick(int notificationId) {
         webService.delNotification(String.valueOf(notificationId));
     }
+
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("llegue");
+        }
+    };
+
 }

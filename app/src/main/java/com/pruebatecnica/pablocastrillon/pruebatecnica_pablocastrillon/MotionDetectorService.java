@@ -21,7 +21,7 @@ import org.joda.time.Seconds;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MotionDetectorService extends Service implements SensorEventListener, WebServiceListener  {
+public class MotionDetectorService extends Service implements SensorEventListener, WebServiceListener {
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -49,7 +49,7 @@ public class MotionDetectorService extends Service implements SensorEventListene
     private DateTime dateTimeFin;
     private DateTime dateTimeTem;
 
-    private NotificationFragment notificationFragment;
+
     private String initTime;
 
 
@@ -69,28 +69,26 @@ public class MotionDetectorService extends Service implements SensorEventListene
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-        notificationFragment = new NotificationFragment();
 
 
-            // Inicializacion de sensor
-            mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
-            assert mSensorManager != null;
-            mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        // Inicializacion de sensor
+        mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        assert mSensorManager != null;
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
-            // Servicio web
-            webService = new WebService(this, this);
-            notificationBody = new NotificationBody();
+        // Servicio web
+        webService = new WebService(this, this);
+        notificationBody = new NotificationBody();
 
-            // Servicio de tiempo
-            simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-
+        // Servicio de tiempo
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -104,6 +102,7 @@ public class MotionDetectorService extends Service implements SensorEventListene
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
 
+
             if (varMuestreo < 10) {
                 acelIni = acelIni + event.values[2];
                 varMuestreo++;
@@ -112,9 +111,9 @@ public class MotionDetectorService extends Service implements SensorEventListene
 
                 acelFin = event.values[2];
                 errorBase = ((Math.abs(promMuestreo - acelFin)) / promMuestreo) * 100;
-                System.out.println(promMuestreo);
-                System.out.println(acelFin);
-                System.out.println(errorBase);
+                System.out.println(promMuestreo + "servicio");
+                System.out.println(acelFin + "servicio");
+                System.out.println(errorBase + "servicio");
 
                 dateTimeTem = new DateTime();
 
@@ -173,13 +172,10 @@ public class MotionDetectorService extends Service implements SensorEventListene
     }
 
 
-
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
 
 
     @Override
@@ -195,16 +191,16 @@ public class MotionDetectorService extends Service implements SensorEventListene
     @Override
     public void onGetNotificationService(NotificationBody notificationBody) {
         this.notificationBody = notificationBody;
+
     }
 
     @Override
     public void onPutNotificationService() {
-
+        sendDateBroadcast("holi");
     }
 
     @Override
     public void onPutNotification(NotificationBody notificationBodies) {
-
 
 
     }
@@ -213,6 +209,11 @@ public class MotionDetectorService extends Service implements SensorEventListene
     public void onDelNotification() {
 
     }
+    private void sendDateBroadcast(String currentDateandTime) {
+        Intent intent = new Intent("LauncherDate");
+        intent.putExtra("currentDateandTime", currentDateandTime);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
+    }
 
 }
