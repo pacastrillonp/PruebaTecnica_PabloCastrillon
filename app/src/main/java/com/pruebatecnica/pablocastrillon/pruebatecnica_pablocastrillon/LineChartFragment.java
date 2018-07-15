@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class BarPlotFragment extends Fragment {
+public class LineChartFragment extends Fragment {
     private NotificationBody[] notificationBodies;
     private int[] impactsPerHour;
     private int[] totalPerHour;
@@ -43,7 +43,7 @@ public class BarPlotFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.barplot_fragment, container, false);
+        View view = inflater.inflate(R.layout.linechart_fragment, container, false);
         Bundle bundle = getArguments();
 
 
@@ -81,7 +81,7 @@ public class BarPlotFragment extends Fragment {
             }
 
 
-            lineChart = view.findViewById(R.id.ll_barplot_fragment);
+            lineChart = view.findViewById(R.id.ll_linechart_fragment);
 
 
             lineChart.setDragEnabled(true);

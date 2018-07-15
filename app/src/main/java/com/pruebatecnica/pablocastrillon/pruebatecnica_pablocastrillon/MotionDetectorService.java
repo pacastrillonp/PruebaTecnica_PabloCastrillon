@@ -1,5 +1,6 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -10,18 +11,17 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.UpdateNotificationListener;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.WebService;
-import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.network.WebServiceListener;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.utils.SerializationTool;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.NotificationBody;
 
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-public class MotionDetectorService extends Service implements SensorEventListener, WebServiceListener {
+public class MotionDetectorService extends Service implements SensorEventListener, UpdateNotificationListener {
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -31,13 +31,12 @@ public class MotionDetectorService extends Service implements SensorEventListene
     private NotificationBody[] notificationBodies;
     private NotificationBody notificationBody;
 
-
     private int varMuestreo = 0;
 
 
     private float acelIni;
     private float acelFin;
-    private float promMuestreo;
+    private float acelProm;
     private float errorBase;
 
     private boolean shake;
@@ -45,17 +44,17 @@ public class MotionDetectorService extends Service implements SensorEventListene
     private boolean notificationPostSend = false;
 
 
+    int motionCont = 0;
     private DateTime dateTimeIni;
     private DateTime dateTimeFin;
-    private DateTime dateTimeTem;
 
+
+    int seconds;
 
     private String initTime;
 
 
-    private SimpleDateFormat simpleDateFormat;
-
-
+    private  DateTimeFormatter dateTimeFormatter;
 
 
     @Nullable
@@ -65,10 +64,9 @@ public class MotionDetectorService extends Service implements SensorEventListene
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-
 
 
         // Inicializacion de sensor
@@ -78,16 +76,17 @@ public class MotionDetectorService extends Service implements SensorEventListene
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
         // Servicio web
+//        webService = new WebService(this, this);
         webService = new WebService(this, this);
         notificationBody = new NotificationBody();
 
         // Servicio de tiempo
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+         dateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
 
         return START_NOT_STICKY;
     }
-
 
 
     @Override
@@ -102,63 +101,60 @@ public class MotionDetectorService extends Service implements SensorEventListene
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
 
-
-            if (varMuestreo < 10) {
+            if (varMuestreo < 8) {
                 acelIni = acelIni + event.values[2];
                 varMuestreo++;
             } else {
-                promMuestreo = acelIni / 10;
 
+                //Calculo de la acceleracion en el eje Z
+                //Valor convencionalmente verdadero
+                acelProm = acelIni / 8;
+                //Valor Experimental
                 acelFin = event.values[2];
-                errorBase = ((Math.abs(promMuestreo - acelFin)) / promMuestreo) * 100;
-                System.out.println(promMuestreo + "servicio");
-                System.out.println(acelFin + "servicio");
-                System.out.println(errorBase + "servicio");
-
-                dateTimeTem = new DateTime();
+                errorBase = (((Math.abs(acelProm - acelFin)) / acelProm) * 100);
+                System.out.println(getApplication().getResources().getString(R.string.service_started));
 
 
-                // error base de 5%, superado este umbral se considera como movimiento
-                if (errorBase > 5) {
-                    shake = true;
-                } else {
-                    shake = false;
-                }
+                // error base de 1%, superado este umbral se considera como movimiento
+                if (errorBase > 1) {
 
-
-                if (shake) {
+                    //Captura hora del movimiento
                     if (!stopWatchStart) {
                         dateTimeIni = new DateTime();
-                        initTime = simpleDateFormat.format(new Date());
+                        initTime  = dateTimeIni.toString(dateTimeFormatter);
                         stopWatchStart = true;
-                    } else {
-                        if (Seconds.secondsBetween(dateTimeIni, dateTimeTem).getSeconds() >= 2) {
 
-                            if (!notificationPostSend) {
-                                notificationBody.setNotificationId(0);
-                                notificationBody.setDate(initTime);
-                                notificationBody.setDuration(0);
-                                webService.postNotificationService(notificationBody);
-                                notificationPostSend = true;
-                            }
+                    }
+                    //pregunta si el movimeinto es continuo
+                    if (motionCont > 2) {
+                        if (!notificationPostSend) {
+                            notificationBody.setNotificationId(0);
+                            notificationBody.setDate(initTime);
+                            notificationBody.setDuration(0);
+                            webService.postNotificationService(notificationBody);
+                            System.out.println("notificacion enviada ");
+                            notificationPostSend = true;
+                            shake = true;
                         }
                     }
+                    motionCont++;
                 } else {
-                    if (stopWatchStart) {
-                        stopWatchStart = false;
-                        notificationPostSend = false;
+                    if (shake){
                         dateTimeFin = new DateTime();
-
-                        int seconds = Seconds.secondsBetween(dateTimeIni, dateTimeFin).getSeconds();
-                        if (seconds >= 2) {
-                            while (true) {
-                                if (notificationBody.getNotificationId() != 0) {
-                                    notificationBody.setDuration(seconds);
-                                    webService.putNotificationService(notificationBody, String.valueOf(notificationBody.getNotificationId()));
-                                    break;
-                                }
-                            }
-                        }
+                        shake = false;
+                    }
+                    stopWatchStart = false;
+                    motionCont = 0;
+                }
+                if (notificationPostSend) {
+                    if (notificationBody.getNotificationId() != 0) {
+                        seconds = Seconds.secondsBetween(dateTimeIni, dateTimeFin).getSeconds();
+                        notificationBody.setDuration(seconds);
+                        webService.putNotificationService(notificationBody, String.valueOf(notificationBody.getNotificationId()));
+                        System.out.println("notificacion actualizada ");
+                        seconds = 0;
+                        notificationPostSend = false;
+                        stopWatchStart = false;
                     }
                 }
                 acelIni = 0;
@@ -177,17 +173,6 @@ public class MotionDetectorService extends Service implements SensorEventListene
 
     }
 
-
-    @Override
-    public void onGetNotifications(NotificationBody[] notificationBodies) {
-
-    }
-
-    @Override
-    public void onGetNotification(NotificationBody notificationBody) {
-
-    }
-
     @Override
     public void onGetNotificationService(NotificationBody notificationBody) {
         this.notificationBody = notificationBody;
@@ -196,22 +181,13 @@ public class MotionDetectorService extends Service implements SensorEventListene
 
     @Override
     public void onPutNotificationService() {
-        sendDateBroadcast("holi");
+        sendDateBroadcast(SerializationTool.serializeToJson(notificationBody));
     }
 
-    @Override
-    public void onPutNotification(NotificationBody notificationBodies) {
 
-
-    }
-
-    @Override
-    public void onDelNotification() {
-
-    }
-    private void sendDateBroadcast(String currentDateandTime) {
-        Intent intent = new Intent("LauncherDate");
-        intent.putExtra("currentDateandTime", currentDateandTime);
+    private void sendDateBroadcast(String notificationBodySt) {
+        Intent intent = new Intent("AddItem");
+        intent.putExtra("notificationBody",notificationBodySt );
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
     }

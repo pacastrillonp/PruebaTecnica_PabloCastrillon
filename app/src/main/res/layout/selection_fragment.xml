@@ -5,15 +5,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="180dp"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp"
+        android:paddingTop="180dp"
         android:weightSum="1">
 
         <Button
             android:id="@+id/bt_show_notification"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="0.33"
             android:gravity="center"
             android:text="@string/show_notifications">
 
@@ -23,11 +27,19 @@
             android:id="@+id/bt_show_barplot"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="0.33"
             android:gravity="center"
             android:text="@string/show_barplot">
 
         </Button>
+
+        <Button
+            android:id="@+id/bt_show_linechart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            android:gravity="center"
+            android:text="@string/show_linechart" />
 
 
     </LinearLayout>

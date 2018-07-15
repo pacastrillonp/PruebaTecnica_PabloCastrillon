@@ -15,6 +15,7 @@ public class SelectionFragment extends Fragment implements View.OnClickListener 
 
     private Button showNotifications;
     private Button showBarPlot;
+    private Button showLineChart;
 
     @Nullable
     @Override
@@ -25,6 +26,8 @@ public class SelectionFragment extends Fragment implements View.OnClickListener 
         showNotifications.setOnClickListener(this);
         showBarPlot = view.findViewById(R.id.bt_show_barplot);
         showBarPlot.setOnClickListener(this);
+        showLineChart = view.findViewById(R.id.bt_show_linechart);
+        showLineChart.setOnClickListener(this);
         return view;
     }
 
@@ -37,6 +40,9 @@ public class SelectionFragment extends Fragment implements View.OnClickListener 
                 break;
             case (R.id.bt_show_barplot):
                 buttonActionClickListener.OnShowBarPlotClick();
+                break;
+            case (R.id.bt_show_linechart):
+                buttonActionClickListener.OnShowLineChartClick();
                 break;
 
         }
@@ -55,6 +61,7 @@ public class SelectionFragment extends Fragment implements View.OnClickListener 
 
         void OnShowBarPlotClick();
 
+        void OnShowLineChartClick();
 
     }
 

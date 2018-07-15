@@ -19,6 +19,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.MotionActivity;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.NotificationBody;
 
 import org.json.JSONArray;
@@ -33,12 +34,19 @@ public class WebService {
     private static final int VOLLEY_TIME_OUT = 10000;
     private RequestQueue mainQueue;
     private WebServiceListener webServiceListener;
+    private UpdateNotificationListener updateNotificationListener;
+
 
     public WebService(Context context, WebServiceListener webServiceListener) {
         mainQueue = Volley.newRequestQueue(context);
         this.webServiceListener = webServiceListener;
-
     }
+
+    public WebService(Context context, UpdateNotificationListener updateNotificationListener) {
+        mainQueue = Volley.newRequestQueue(context);
+        this.updateNotificationListener = updateNotificationListener;
+    }
+
 
     private String getApiRestUrl() {
         return "http://proyectos.tekus.co/Test/api/notifications";
@@ -268,7 +276,6 @@ public class WebService {
     }
 
 
-
     public void postNotificationService(NotificationBody notificationBody) {
         try {
 
@@ -287,7 +294,9 @@ public class WebService {
 
                                 Gson gson = new GsonBuilder().create();
                                 NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-                                webServiceListener.onGetNotificationService(resp);
+//                                webServiceListener.onGetNotificationService(resp);
+//                                webServiceListener.onGetNotificationService(resp);
+                                updateNotificationListener.onGetNotificationService(resp);
 
                             } catch (Exception ex) {
                                 Log.e("onResponse", ex.getMessage());
@@ -345,7 +354,8 @@ public class WebService {
 
                                 Gson gson = new GsonBuilder().create();
                                 NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-                                webServiceListener.onPutNotificationService();
+//                                webServiceListener.onPutNotificationService();
+                                updateNotificationListener.onPutNotificationService();
                             } catch (Exception ex) {
                                 Log.e("onResponse", ex.getMessage());
                             }
