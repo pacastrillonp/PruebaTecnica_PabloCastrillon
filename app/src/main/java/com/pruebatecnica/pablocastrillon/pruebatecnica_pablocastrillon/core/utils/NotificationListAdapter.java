@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.R;
@@ -55,7 +56,7 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
         private TextView notificationId;
         private TextView date;
         private TextView duration;
-        private Button deleteNotification;
+        private ImageButton deleteNotification;
 
         public NotificationListViewHolder(View itemView) {
             super(itemView);

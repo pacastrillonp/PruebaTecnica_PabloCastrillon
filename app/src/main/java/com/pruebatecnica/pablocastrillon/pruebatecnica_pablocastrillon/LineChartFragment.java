@@ -2,6 +2,7 @@ package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 public class LineChartFragment extends Fragment {
     private NotificationBody[] notificationBodies;
@@ -46,7 +48,8 @@ public class LineChartFragment extends Fragment {
         View view = inflater.inflate(R.layout.linechart_fragment, container, false);
         Bundle bundle = getArguments();
 
-
+        Objects.requireNonNull(getActivity()).setRequestedOrientation(
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         assert bundle != null;
 
         if (bundle.getInt("index") > 0) {
@@ -88,22 +91,22 @@ public class LineChartFragment extends Fragment {
             lineChart.setScaleEnabled(false);
 
             LimitLine lowerLimit = new LimitLine(0f, "");
-            lowerLimit.setLineWidth(4f);
+            lowerLimit.setLineWidth(4);
             lowerLimit.enableDashedLine(10f, 10f, 0f);
             lowerLimit.setLabelPosition(LimitLine.LimitLabelPosition.LEFT_BOTTOM);
-            lowerLimit.setTextSize(15f);
+            lowerLimit.setTextSize(15);
 
-
-
-
+            // Entradas a graficar
             ArrayList<Entry> yValues = new ArrayList<>();
             for (int index = 0; index < totalPerHour.length; index++) {
-                yValues.add(new Entry(index, totalPerHour[index]));
+                if (totalPerHour[index] != 0) {
+                    yValues.add(new Entry(index, totalPerHour[index]));
+                }
+
             }
 
-            LineDataSet lineDataSet1 = new LineDataSet(yValues, "Data Set 1");
+            LineDataSet lineDataSet1 = new LineDataSet(yValues, getString(R.string.interactions_per_hour));
             lineDataSet1.setFillAlpha(110);
-
             lineDataSet1.setColor(Color.BLUE);
             lineDataSet1.setLineWidth(3f);
             lineDataSet1.setValueTextSize(10f);
@@ -115,36 +118,11 @@ public class LineChartFragment extends Fragment {
 
             lineChart.setData(lineData);
 
-            String[] values = new String[]{
-                    "00:00 - 01:00",
-                    "01:00 - 02:00",
-                    "02:00 - 03:00",
-                    "03:00 - 04:00",
-                    "04:00 - 05:00",
-                    "05:00 - 06:00",
-                    "06:00 - 07:00",
-                    "07:00 - 08:00",
-                    "08:00 - 09:00",
-                    "09:00 - 10:00",
-                    "10:00 - 11:00",
-                    "11:00 - 12:00",
-                    "12:00 - 13:00",
-                    "13:00 - 14:00",
-                    "14:00 - 15:00",
-                    "15:00 - 16:00",
-                    "16:00 - 17:00",
-                    "17:00 - 18:00",
-                    "18:00 - 19:00",
-                    "19:00 - 20:00",
-                    "20:00 - 21:00",
-                    "21:00 - 22:00",
-                    "22:00 - 23:00",
-                    "23:00 - 00:00"};
+            String[] values = getResources().getStringArray(R.array.array_rage_hours);
 
             XAxis xAxis = lineChart.getXAxis();
             xAxis.removeAllLimitLines();
             xAxis.setValueFormatter(new XAxisVAlueFormatter(values));
-
             xAxis.setGranularity(1f);
 
 

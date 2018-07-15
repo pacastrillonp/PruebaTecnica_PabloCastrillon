@@ -1,6 +1,5 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
-import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;

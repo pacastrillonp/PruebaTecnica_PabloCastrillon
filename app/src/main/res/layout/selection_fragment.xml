@@ -7,39 +7,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="180dp"
+        android:paddingBottom="150dp"
         android:paddingLeft="100dp"
         android:paddingRight="100dp"
-        android:paddingTop="180dp"
+        android:paddingTop="150dp"
         android:weightSum="1">
 
         <Button
             android:id="@+id/bt_show_notification"
+            style="@style/AlertDialog.AppCompat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.33"
+            android:background="@drawable/rounted_button_blue"
             android:gravity="center"
-            android:text="@string/show_notifications">
+            android:text="@string/show_notifications"
+            android:textColor="@color/white">
 
         </Button>
 
         <Button
             android:id="@+id/bt_show_barplot"
+            style="@style/AlertDialog.AppCompat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.33"
+            android:background="@drawable/rounted_button_blue"
             android:gravity="center"
-            android:text="@string/show_barplot">
+            android:text="@string/show_barplot"
+            android:textColor="@color/white">
 
         </Button>
 
         <Button
             android:id="@+id/bt_show_linechart"
+            style="@style/AlertDialog.AppCompat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.33"
+            android:background="@drawable/rounted_button_blue"
             android:gravity="center"
-            android:text="@string/show_linechart" />
+            android:text="@string/show_linechart"
+            android:textColor="@color/white" />
 
 
     </LinearLayout>

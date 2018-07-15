@@ -10,6 +10,12 @@
     <string name="it_is_not_possible_to_obtain_the_plot">It is not possible to obtain the plot</string>
 
 
+    <string name="notification_id">Id</string>
+    <string name="Date">Date</string>
+    <string name="Duration">Duration</string>
+
+
+    <string name="interactions_per_hour">Interactions per hour</string>
 
     <array name="array_rage_hours">
         <item>00:00 - 01:00</item>
