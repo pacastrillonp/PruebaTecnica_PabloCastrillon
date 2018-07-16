@@ -47,9 +47,9 @@ public class MotionDetectorService extends Service implements SensorEventListene
 
     //Captura de tiempo inicial y final
     private DateTimeFormatter dateTimeFormatter;
-    private int motionCont = 0;
     private DateTime dateTimeIni;
     private DateTime dateTimeFin;
+    private DateTime dateTimeTem;
     private String initTime;
     private int seconds;
 
@@ -97,7 +97,7 @@ public class MotionDetectorService extends Service implements SensorEventListene
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-
+            dateTimeTem = new DateTime();
             if (varMuestreo < 8) {
                 acelIni = acelIni + event.values[2];
                 varMuestreo++;
@@ -123,7 +123,8 @@ public class MotionDetectorService extends Service implements SensorEventListene
 
                     }
                     //pregunta si el movimeinto es continuo
-                    if (motionCont > 2) {
+
+                    if (Seconds.secondsBetween(dateTimeIni, dateTimeTem).getSeconds() > 2) {
                         if (!notificationPostSend) {
                             notificationBody.setNotificationId(0);
                             notificationBody.setDate(initTime);
@@ -134,18 +135,20 @@ public class MotionDetectorService extends Service implements SensorEventListene
                             shake = true;
                         }
                     }
-                    motionCont++;
+
                 } else {
                     if (shake) {
                         dateTimeFin = new DateTime();
                         shake = false;
                     }
                     stopWatchStart = false;
-                    motionCont = 0;
+
                 }
                 if (notificationPostSend) {
                     if (notificationBody.getNotificationId() != 0) {
+
                         if ((dateTimeFin != null) && (dateTimeIni != null)) {
+
                             seconds = Seconds.secondsBetween(dateTimeIni, dateTimeFin).getSeconds();
                             notificationBody.setDuration(seconds);
                             webService.putNotificationService(notificationBody, String.valueOf(notificationBody.getNotificationId()));
@@ -177,17 +180,20 @@ public class MotionDetectorService extends Service implements SensorEventListene
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
     //actualiza el modelo
     @Override
     public void onGetNotificationService(NotificationBody notificationBody) {
         this.notificationBody = notificationBody;
 
     }
+
     // respues de webservice, lanza sendDateBroadcast
     @Override
     public void onPutNotificationService() {
         sendDateBroadcast(SerializationTool.serializeToJson(notificationBody));
     }
+
     // se comunica con la actividad para agregar items en el fragmento notificacion.
     private void sendDateBroadcast(String notificationBodySt) {
         Intent intent = new Intent("AddItem");

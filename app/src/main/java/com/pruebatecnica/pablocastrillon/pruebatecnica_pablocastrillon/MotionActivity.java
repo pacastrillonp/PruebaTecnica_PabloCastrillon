@@ -17,14 +17,11 @@ import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.util
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.utils.SerializationTool;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.NotificationBody;
 
-import java.util.Objects;
-
 public class MotionActivity extends FragmentManagerActivity implements WebServiceListener, SelectionFragment.ButtonActionClickListener, NotificationListAdapter.ButtonActionClickListener {
 
 
     private WebService webService;
     private NotificationBody[] notificationBodies;
-    private NotificationBody notificationBody;
 
 
     //fragments
@@ -76,7 +73,7 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
             // Servicio web
 //            webService = new WebService(this, this);
             webService = new WebService(this, this);
-            notificationBody = new NotificationBody();
+
 
             // Inicializacion de fragmentos
             selectionFragment = new SelectionFragment();
@@ -141,10 +138,10 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
 
     }
 
-    //Actualiza el modelo.
+
     @Override
     public void onGetNotification(NotificationBody notificationBody) {
-        this.notificationBody = notificationBody;
+
     }
 
     @Override
@@ -193,21 +190,20 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
                 break;
             case lineChartFragmentTag:
                 removeFragment(lineChartFragmentTag);
-                this.setRequestedOrientation(
-                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 addFragment(selectionFragment, selectionFragmentTag);
                 activeFragment = selectionFragmentTag;
                 break;
             case barplotFragmentTag:
                 removeFragment(barplotFragmentTag);
                 addFragment(selectionFragment, selectionFragmentTag);
-                this.setRequestedOrientation(
-                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 activeFragment = selectionFragmentTag;
                 break;
             case notificationFragmentTag:
                 removeFragment(notificationFragmentTag);
                 addFragment(selectionFragment, selectionFragmentTag);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 activeFragment = selectionFragmentTag;
                 break;
 

@@ -82,11 +82,7 @@ public class BarplotFragment extends Fragment {
         }
 
         barChart = view.findViewById(R.id.ll_barplot_fragment);
-        barChart.setDrawBarShadow(false);
-        barChart.setDrawValueAboveBar(true);
-        barChart.setMaxVisibleValueCount(70);
-        barChart.setPinchZoom(false);
-        barChart.setDrawGridBackground(true);
+
 
         // Entradas a graficar
         ArrayList<BarEntry> barEntries = new ArrayList<>();
@@ -101,12 +97,6 @@ public class BarplotFragment extends Fragment {
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         barChart.setFitBars(true);
 
-//
-//        final String[] valuesShow = new String[labelsTem.size()];
-//
-//        for (int j = 0; j < labelsTem.size(); j++ ){
-//            valuesShow[j] = labelsTem.get(j);
-//        }
         BarData data = new BarData(barDataSet);
         barChart.setData(data);
 
@@ -116,9 +106,6 @@ public class BarplotFragment extends Fragment {
         xAxis.removeAllLimitLines();
         xAxis.setValueFormatter(new XAxisVAlueFormatter(values));
         xAxis.setGranularity(1f);
-//
-//
-
 
         return view;
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Motion Detection Pablo Castrillon</string>
+    <string name="Date">Fecha</string>
+    <string name="delete">Borrar</string>
+    <string name="Duration">Duración</string>
+    <string name="notification_id">Id</string>
+    <string name="interactions_per_hour">"Intereacciones por hora "</string>
+    <string name="it_is_not_possible_to_obtain_the_plot">"No es posible obtener la grafica "</string>
+    <string name="service_started">"Servicio iniciado "</string>
+    <string name="show_barplot">Mostrar Barplot</string>
+    <string name="show_linechart">Mostrar Linechart</string>
+    <string name="show_notifications">Mostrar notificaciones</string>
+</resources>
