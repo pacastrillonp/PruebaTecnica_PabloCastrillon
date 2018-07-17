@@ -25,7 +25,6 @@ public class NotificationFragment extends Fragment {
     private NotificationListAdapter.ButtonActionClickListener buttonActionClickListener;
 
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,14 +38,12 @@ public class NotificationFragment extends Fragment {
         notificationsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-
         assert bundle != null;
         notificationBodies = new NotificationBody[bundle.getInt("index")];
         notificationBodies = SerializationTool.deserializeFromJson(bundle.getString("notificationBodies"), NotificationBody[].class);
 
 
-
-        notificationListAdapter = new NotificationListAdapter(getContext(), buttonActionClickListener);
+        notificationListAdapter = new NotificationListAdapter(buttonActionClickListener);
         notificationsRecyclerView.setAdapter(notificationListAdapter);
 
 
@@ -68,7 +65,6 @@ public class NotificationFragment extends Fragment {
     }
 
 
-
     // Sirve para notifica que los datos han cambiado y se necesita cargar más
     public void dataChanged(NotificationBody notificationBodies) {
 
@@ -82,8 +78,6 @@ public class NotificationFragment extends Fragment {
         super.onAttach(context);
         buttonActionClickListener = (NotificationListAdapter.ButtonActionClickListener) context;
     }
-
-
 
 
 }

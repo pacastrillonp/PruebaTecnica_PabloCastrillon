@@ -1,12 +1,9 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
-import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
+import java.util.Locale;
 
 public class BarplotFragment extends Fragment {
     private BarChart barChart;
@@ -37,16 +34,13 @@ public class BarplotFragment extends Fragment {
     private int[] totalPerHour;
     private int hour = 0;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.barplot_fragment, container, false);
         Bundle bundle = getArguments();
 
-
-        Objects.requireNonNull(getActivity()).setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-
+        if (getActivity() != null) {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
         assert bundle != null;
 
         if (bundle.getInt("index") > 0) {
@@ -56,7 +50,7 @@ public class BarplotFragment extends Fragment {
             totalPerHour = new int[24];
 
             notificationBodies = SerializationTool.deserializeFromJson(bundle.getString("notificationBodies"), NotificationBody[].class);
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
 
             try {
@@ -104,18 +98,18 @@ public class BarplotFragment extends Fragment {
 
         XAxis xAxis = barChart.getXAxis();
         xAxis.removeAllLimitLines();
-        xAxis.setValueFormatter(new XAxisVAlueFormatter(values));
+        xAxis.setValueFormatter(new XAxisValueFormatter(values));
         xAxis.setGranularity(1f);
 
         return view;
     }
 
 
-    public class XAxisVAlueFormatter implements IAxisValueFormatter {
+    public class XAxisValueFormatter implements IAxisValueFormatter {
 
         private String[] xValues;
 
-        public XAxisVAlueFormatter(String[] xValues) {
+        private XAxisValueFormatter(String[] xValues) {
             this.xValues = xValues;
         }
 

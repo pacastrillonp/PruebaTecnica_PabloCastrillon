@@ -19,7 +19,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.MotionActivity;
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.NotificationBody;
 
 import org.json.JSONArray;
@@ -60,6 +59,7 @@ public class WebService {
                     .buildUpon();
             String uri = uriBuilder.toString();
 
+
             Request request = new JsonArrayRequest(Request.Method.GET, uri, null,
                     new Response.Listener<JSONArray>() {
 
@@ -77,8 +77,7 @@ public class WebService {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
-                            Log.e(this.toString(), error.getMessage());
+                            webServiceListener.onGetNotifications(new NotificationBody[0]);
                         }
                     }) {
                 @Override
@@ -101,179 +100,12 @@ public class WebService {
             mainQueue.add(request);
 
         } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
+
         }
 
 
     }
 
-
-    public void getNotification(String NotificationId) {
-
-        try {
-            Uri.Builder uriBuilder = Uri.parse(getApiRestUrl())
-                    .buildUpon()
-                    .appendPath(NotificationId);
-
-            String uri = uriBuilder.toString();
-
-            Request request = new JsonObjectRequest(Request.Method.GET, uri, null,
-                    new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Gson gson = new Gson();
-                            try {
-                                NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-                            } catch (Exception ex) {
-                                Log.e(this.toString(), ex.getMessage());
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                            Log.e(this.toString(), error.getMessage());
-                        }
-                    }) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    return handleEmptyObjectResponse(response);
-                }
-
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new ArrayMap<>();
-                    headers.put("Authorization", "Basic 1036612823");
-                    return headers;
-                }
-            };
-            request.setRetryPolicy(new DefaultRetryPolicy(
-                    VOLLEY_TIME_OUT,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            request.setShouldCache(false);
-            mainQueue.add(request);
-
-        } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
-        }
-
-
-    }
-
-
-    public void postNotification(NotificationBody notificationBody) {
-        try {
-
-            Gson gson = new GsonBuilder().create();
-
-            JSONObject data = new JSONObject(gson.toJson(notificationBody));
-            Uri.Builder uriBuilder = Uri.parse(getApiRestUrl())
-                    .buildUpon();
-
-            Request jsObjRequest = new JsonObjectRequest
-                    (Request.Method.POST, uriBuilder.toString(), data, new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-
-                                Gson gson = new GsonBuilder().create();
-                                NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-                                webServiceListener.onGetNotification(resp);
-
-                            } catch (Exception ex) {
-                                Log.e("onResponse", ex.getMessage());
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                        }
-                    }) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    return handleEmptyObjectResponse(response);
-                }
-
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new ArrayMap<>();
-                    headers.put("Authorization", "Basic 1036612823");
-                    return headers;
-                }
-            };
-
-            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    VOLLEY_TIME_OUT,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            jsObjRequest.setShouldCache(false);
-
-            mainQueue.add(jsObjRequest);
-
-        } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
-        }
-    }
-
-
-    public void putNotification(NotificationBody notificationBody, String NotificationId) {
-        try {
-
-            Gson gson = new GsonBuilder().create();
-
-            JSONObject data = new JSONObject(gson.toJson(notificationBody));
-            Uri.Builder uriBuilder = Uri.parse(getApiRestUrl())
-                    .buildUpon()
-                    .appendPath(NotificationId);
-
-            Request jsObjRequest = new JsonObjectRequest
-                    (Request.Method.PUT, uriBuilder.toString(), data, new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-
-                                Gson gson = new GsonBuilder().create();
-                                NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-                                webServiceListener.onPutNotification(resp);
-                            } catch (Exception ex) {
-                                Log.e("onResponse", ex.getMessage());
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                        }
-                    }) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    return handleEmptyObjectResponse(response);
-                }
-
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new ArrayMap<>();
-                    headers.put("Authorization", "Basic 1036612823");
-                    return headers;
-                }
-            };
-
-            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    VOLLEY_TIME_OUT,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            jsObjRequest.setShouldCache(false);
-
-            mainQueue.add(jsObjRequest);
-
-        } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
-        }
-    }
 
 
     public void postNotificationService(NotificationBody notificationBody) {
@@ -294,8 +126,6 @@ public class WebService {
 
                                 Gson gson = new GsonBuilder().create();
                                 NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-//                                webServiceListener.onGetNotificationService(resp);
-//                                webServiceListener.onGetNotificationService(resp);
                                 updateNotificationListener.onGetNotificationService(resp);
 
                             } catch (Exception ex) {
@@ -330,66 +160,10 @@ public class WebService {
             mainQueue.add(jsObjRequest);
 
         } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
+
         }
     }
 
-
-    public void putNotificationService(NotificationBody notificationBody, String NotificationId) {
-        try {
-
-            Gson gson = new GsonBuilder().create();
-
-            JSONObject data = new JSONObject(gson.toJson(notificationBody));
-            Uri.Builder uriBuilder = Uri.parse(getApiRestUrl())
-                    .buildUpon()
-                    .appendPath(NotificationId);
-
-            Request jsObjRequest = new JsonObjectRequest
-                    (Request.Method.PUT, uriBuilder.toString(), data, new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-
-                                Gson gson = new GsonBuilder().create();
-                                NotificationBody resp = gson.fromJson(response.toString(), NotificationBody.class);
-//                                webServiceListener.onPutNotificationService();
-                                updateNotificationListener.onPutNotificationService();
-                            } catch (Exception ex) {
-                                Log.e("onResponse", ex.getMessage());
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                        }
-                    }) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    return handleEmptyObjectResponse(response);
-                }
-
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new ArrayMap<>();
-                    headers.put("Authorization", "Basic 1036612823");
-                    return headers;
-                }
-            };
-
-            jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    VOLLEY_TIME_OUT,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            jsObjRequest.setShouldCache(false);
-
-            mainQueue.add(jsObjRequest);
-
-        } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
-        }
-    }
 
     public void delNotification(String NotificationId) {
 
@@ -417,7 +191,7 @@ public class WebService {
                         @Override
                         public void onErrorResponse(VolleyError error) {
 
-                            Log.e(this.toString(), error.getMessage());
+
                         }
                     }) {
                 @Override
@@ -439,7 +213,7 @@ public class WebService {
             mainQueue.add(request);
 
         } catch (Exception ex) {
-            Log.e(this.toString(), ex.getMessage());
+
         }
 
 

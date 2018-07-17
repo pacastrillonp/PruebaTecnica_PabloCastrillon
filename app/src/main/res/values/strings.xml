@@ -5,8 +5,9 @@
     <string name="show_barplot">Show BarPlot</string>
     <string name="show_linechart">Show Linechart</string>
 
-    <string name="delete">Delete</string>
+    <!--<string name="delete">Delete</string>-->
     <string name="service_started">Service Started</string>
+    <string name="the_action_is_not_possible">The action is not possible</string>
     <string name="it_is_not_possible_to_obtain_the_plot">It is not possible to obtain the plot</string>
 
 
@@ -43,4 +44,5 @@
         <item>22:00 - 23:00</item>
         <item>23:00 - 00:00</item>
     </array>
+    <string name="delete">Delete</string>
 </resources>

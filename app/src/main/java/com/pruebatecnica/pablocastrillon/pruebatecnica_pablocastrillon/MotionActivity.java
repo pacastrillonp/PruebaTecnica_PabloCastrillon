@@ -48,10 +48,8 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
 
     public static final String LAUNCHER_FILTER = "AddItem";
 
-    private int dataChanged = 0;
 
 
-    @SuppressLint("SimpleDateFormat")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +62,6 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
 //            Iniciliazacion del servicio
             startService(new Intent(this, MotionDetectorService.class));
@@ -99,43 +96,33 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
         this.notificationBodies = notificationBodies;
         bundle.putInt("index", notificationBodies.length);
         bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
-        if (barcharClicked) {
-            if (notificationBodies.length != 0) {
+        if (notificationBodies.length != 0) {
+            if (barcharClicked) {
                 bundle.putInt("index", notificationBodies.length);
                 bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
                 removeFragment(activeFragment);
                 barplotFragment.setArguments(bundle);
                 addFragment(barplotFragment, barplotFragmentTag);
                 activeFragment = barplotFragmentTag;
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), R.string.it_is_not_possible_to_obtain_the_plot, Toast.LENGTH_SHORT);
-                toast.show();
-            }
-
-            barcharClicked = false;
-        } else if (linecharClicked) {
-            if (notificationBodies.length != 0) {
+                barcharClicked = false;
+            } else if (linecharClicked) {
                 bundle.putInt("index", notificationBodies.length);
                 bundle.putString("notificationBodies", SerializationTool.serializeToJson(notificationBodies));
                 removeFragment(activeFragment);
                 lineChartFragment.setArguments(bundle);
                 addFragment(lineChartFragment, lineChartFragmentTag);
                 activeFragment = lineChartFragmentTag;
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), R.string.it_is_not_possible_to_obtain_the_plot, Toast.LENGTH_SHORT);
-                toast.show();
-            }
-
-            linecharClicked = false;
-        } else if (notificationClicked) {
-            removeFragment(activeFragment);
-            notificationFragment.setArguments(bundle);
-            addFragment(notificationFragment, notificationFragmentTag);
-            activeFragment = notificationFragmentTag;
-            notificationClicked = false;
+                linecharClicked = false;
+            } else if (notificationClicked) {
+                removeFragment(activeFragment);
+                notificationFragment.setArguments(bundle);
+                addFragment(notificationFragment, notificationFragmentTag);
+                activeFragment = notificationFragmentTag;
+                notificationClicked = false;            }
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), R.string.the_action_is_not_possible, Toast.LENGTH_SHORT);
+            toast.show();
         }
-
-
     }
 
 
@@ -144,16 +131,10 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
 
     }
 
-    @Override
-    public void onPutNotification(NotificationBody notificationBodies) {
-        notificationFragment.dataChanged(notificationBodies);
-    }
 
-    @Override
-    public void onDelNotification() {
 
-    }
-    //endregion
+
+//endregion
 
 
     //regionSelectionFragment
@@ -213,35 +194,6 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
 
 
     @Override
-    protected void onResume() {
-        try {
-            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(LAUNCHER_FILTER));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-
-
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
-    }
-
-    @Override
-    protected void onStart() {
-//
-        super.onStart();
-    }
-
-    @Override
     public void OnDeleteChannelClick(int notificationId) {
         webService.delNotification(String.valueOf(notificationId));
     }
@@ -250,14 +202,7 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            dataChanged++;
-            if (activeFragment.equals(notificationFragmentTag)) {
-                if (dataChanged == 2) {
-                    notificationFragment.dataChanged(SerializationTool.deserializeFromJson(intent.getStringExtra("notificationBody"), NotificationBody.class));
-                    dataChanged = 0;
-                }
-
-            }
+            notificationFragment.dataChanged(SerializationTool.deserializeFromJson(intent.getStringExtra("notificationBody"), NotificationBody.class));
 
         }
     };

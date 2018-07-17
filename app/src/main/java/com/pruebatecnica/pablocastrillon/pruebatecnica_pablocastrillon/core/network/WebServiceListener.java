@@ -6,6 +6,5 @@ public interface WebServiceListener {
 
     void onGetNotifications (NotificationBody[] notificationBodies);
     void onGetNotification (NotificationBody notificationBodies);
-    void onPutNotification (NotificationBody notificationBodies);
-    void onDelNotification ();
+
 }

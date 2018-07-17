@@ -11,4 +11,5 @@
     <string name="show_barplot">Mostrar Barplot</string>
     <string name="show_linechart">Mostrar Linechart</string>
     <string name="show_notifications">Mostrar notificaciones</string>
+    <string name="the_action_is_not_possible">La acción no es posible</string>
 </resources>

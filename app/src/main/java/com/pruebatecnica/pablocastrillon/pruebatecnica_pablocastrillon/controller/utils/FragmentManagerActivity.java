@@ -1,6 +1,6 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.controller.utils;
 
-import android.annotation.SuppressLint;
+
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +17,7 @@ public class FragmentManagerActivity extends AppCompatActivity {
         } else {
 
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.commitAllowingStateLoss();
             fragmentTransaction.show(previousFragment);
         }
     }
@@ -32,7 +33,8 @@ public class FragmentManagerActivity extends AppCompatActivity {
             fragmentTransaction.commitAllowingStateLoss();
         } else {
 
-            @SuppressLint("CommitTransaction") FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.commitAllowingStateLoss();
             fragmentTransaction.show(previousFragment);
 
         }

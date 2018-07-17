@@ -1,12 +1,10 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.utils;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,13 +17,11 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
 
 
     private ArrayList<NotificationBody> notificationBodyArrayList;
-    private Context context;
 
     private ButtonActionClickListener buttonActionClickListener;
 
-    public NotificationListAdapter(Context context, ButtonActionClickListener buttonActionClickListener) {
+    public NotificationListAdapter(ButtonActionClickListener buttonActionClickListener) {
         this.buttonActionClickListener = buttonActionClickListener;
-        this.context = context;
         notificationBodyArrayList = new ArrayList<>();
 
     }
