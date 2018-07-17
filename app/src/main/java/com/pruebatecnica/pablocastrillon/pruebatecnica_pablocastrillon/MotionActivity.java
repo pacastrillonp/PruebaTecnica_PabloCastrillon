@@ -126,10 +126,6 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
     }
 
 
-    @Override
-    public void onGetNotification(NotificationBody notificationBody) {
-
-    }
 
 
 

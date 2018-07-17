@@ -3,8 +3,5 @@ package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.core.net
 import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.NotificationBody;
 
 public interface WebServiceListener {
-
     void onGetNotifications (NotificationBody[] notificationBodies);
-    void onGetNotification (NotificationBody notificationBodies);
-
 }
