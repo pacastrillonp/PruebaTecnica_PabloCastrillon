@@ -36,6 +36,7 @@ public class WebService {
     private UpdateNotificationListener updateNotificationListener;
 
 
+
     public WebService(Context context, WebServiceListener webServiceListener) {
         mainQueue = Volley.newRequestQueue(context);
         this.webServiceListener = webServiceListener;

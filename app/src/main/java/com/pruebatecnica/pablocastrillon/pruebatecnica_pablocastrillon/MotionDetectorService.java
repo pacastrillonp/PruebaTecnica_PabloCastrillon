@@ -75,7 +75,6 @@ public class MotionDetectorService extends Service implements SensorEventListene
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
         // Servicio web
-//        webService = new WebService(this, this);
         webService = new WebService(this, this);
         notificationBody = new NotificationBody();
 
@@ -159,7 +158,6 @@ public class MotionDetectorService extends Service implements SensorEventListene
         sendDateBroadcast(SerializationTool.serializeToJson(notificationBody));
 
     }
-
 
 
     // se comunica con la actividad para agregar items en el fragmento notificacion.

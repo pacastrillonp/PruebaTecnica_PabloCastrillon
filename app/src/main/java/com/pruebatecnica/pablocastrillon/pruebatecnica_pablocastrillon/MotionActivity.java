@@ -1,6 +1,5 @@
 package com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -124,8 +123,6 @@ public class MotionActivity extends FragmentManagerActivity implements WebServic
             toast.show();
         }
     }
-
-
 
 
 
