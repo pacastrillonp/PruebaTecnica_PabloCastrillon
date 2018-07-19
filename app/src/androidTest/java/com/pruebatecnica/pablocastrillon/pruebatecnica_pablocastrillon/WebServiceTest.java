@@ -12,6 +12,9 @@ import com.pruebatecnica.pablocastrillon.pruebatecnica_pablocastrillon.model.Not
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 @RunWith(AndroidJUnit4.class)
 public class WebServiceTest {
     private final Object syncObject = new Object();
@@ -19,7 +22,10 @@ public class WebServiceTest {
         @Override
         public void onGetNotifications(NotificationBody[] notificationBodies) {
 
+            assertNotEquals(notificationBodies, null);
+
             System.out.println(SerializationTool.serializeToJson(notificationBodies));
+
             synchronized (syncObject) {
                 syncObject.notify();
             }
